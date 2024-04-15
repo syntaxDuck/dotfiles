@@ -60,6 +60,9 @@ fi
 # zoxid
 cargo install zoxide --locked
 
+# lazygit
+go install github.com/jesseduffield/lazygit@latest
+
 # Tmux
 cp -r ~/.config/.dotfiles/tmux ~/.config/tmux/
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
