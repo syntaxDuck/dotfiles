@@ -17,10 +17,7 @@ sudo apt-get -y install git \
 	stow \
 	nodejs npm
 
-# This will probably be done by GNU stow
-# git clone https://github.com/syntaxDuck/.dotfiles.git ~/.config/.dotfiles
-# cp -a ~/.config/zsh/. ~/
-# cp -r ~/.config/.dotfiles/nvim ~/.config/nvim/
+cd ~
 
 # Rust Install
 if ! command -v cargo &>/dev/null; then
@@ -31,29 +28,33 @@ else
 fi
 
 # Go Install
-go_version="https://go.dev/dl/go1.22.2.linux-amd64.tar.gz"
-cd ~
-echo "Downloading $go_version..."
-curl -OL $go_version
-echo "Downloaded."
+if ! command -v go &>/dev/null; then
+	go_version="https://go.dev/dl/go1.22.2.linux-amd64.tar.gz"
+	cd ~
+	echo "Downloading $go_version..."
+	curl -OL $go_version
+	echo "Downloaded."
 
-downloaded_hash=$(sha256sum $(basename $go_version) | awk '{print $1}')
-echo "Downloaded hash: \t$downloaded_hash"
+	downloaded_hash=$(sha256sum $(basename $go_version) | awk '{print $1}')
+	echo "Downloaded hash: \t$downloaded_hash"
 
-expected_hash="5901c52b7a78002aeff14a21f93e0f064f74ce1360fce51c6ee68cd471216a17"
-echo "Expected hash: \t\t$expected_hash"
+	expected_hash="5901c52b7a78002aeff14a21f93e0f064f74ce1360fce51c6ee68cd471216a17"
+	echo "Expected hash: \t\t$expected_hash"
 
-if [[ "$downloaded_hash" == "$expected_hash" ]]; then
-	echo "Hashes matched. Verifying downloaded file..."
-	if [ -f $(basename $go_version) ]; then
-		echo "File exists. Installing..."
-		sudo tar -C /usr/local -xvf $(basename $go_version)
-		echo "Installation complete."
+	if [[ "$downloaded_hash" == "$expected_hash" ]]; then
+		echo "Hashes matched. Verifying downloaded file..."
+		if [ -f $(basename $go_version) ]; then
+			echo "File exists. Installing..."
+			sudo tar -C /usr/local -xvf $(basename $go_version)
+			echo "Installation complete."
+		else
+			echo "ERROR: Downloaded file not found."
+		fi
 	else
-		echo "ERROR: Downloaded file not found."
+		echo "ERROR: Checksum didn't match for Go installation!!"
 	fi
 else
-	echo "ERROR: Checksum didn't match for Go installation!!"
+	echo "Go already installed."
 fi
 
 # zoxid
