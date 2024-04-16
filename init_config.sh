@@ -17,31 +17,41 @@ sudo apt-get -y install git \
 	stow \
 	nodejs npm
 
+start_dir=$PWD
+
+go_version="https://go.dev/dl/go1.22.2.linux-amd64.tar.gz"
+go_expected_hash="5901c52b7a78002aeff14a21f93e0f064f74ce1360fce51c6ee68cd471216a17"
+
+stow .
 cd ~
 
 # Rust Install
+echo "\n############################################"
+echo "INSTALL RUST                                "
+echo "############################################\n"
 if ! command -v cargo &>/dev/null; then
+	echo "Downloading rust toolchain..."
 	curl --proto '=https' --tlsv0.2 -sSf https://sh.rustup.rs | sh
 	source ~/.zshrc
 else
-	echo "Rust already installed!"
+	echo "Rust already installed!..."
 fi
 
 # Go Install
+echo "\n############################################"
+echo "INSTALL GO                                  "
+echo "############################################\n"
 if ! command -v go &>/dev/null; then
-	go_version="https://go.dev/dl/go1.22.2.linux-amd64.tar.gz"
 	cd ~
 	echo "Downloading $go_version..."
 	curl -OL $go_version
-	echo "Downloaded."
 
 	downloaded_hash=$(sha256sum $(basename $go_version) | awk '{print $1}')
+	echo "Checking checksum..."
 	echo "Downloaded hash: \t$downloaded_hash"
+	echo "Expected hash: \t\t$go_expected_hash"
 
-	expected_hash="5901c52b7a78002aeff14a21f93e0f064f74ce1360fce51c6ee68cd471216a17"
-	echo "Expected hash: \t\t$expected_hash"
-
-	if [[ "$downloaded_hash" == "$expected_hash" ]]; then
+	if [[ "$downloaded_hash" == "$go_expected_hash" ]]; then
 		echo "Hashes matched. Verifying downloaded file..."
 		if [ -f $(basename $go_version) ]; then
 			echo "File exists. Installing..."
@@ -57,32 +67,80 @@ else
 	echo "Go already installed."
 fi
 
-# zoxid
-cargo install zoxide --locked
+# zoxide
+echo "\n############################################"
+echo "INSTALL ZOXIDE                               "
+echo "############################################\n"
+if ! command -v zoxide &>/dev/null; then
+	cargo install zoxide --locked
+else
+	echo "zoxide already installed"
+fi
 
 # lazygit
-go install github.com/jesseduffield/lazygit@latest
+echo "\n############################################"
+echo "INSTALL LAZYGIT                             "
+echo "############################################\n"
+if ! command -v lazygit &>/dev/null; then
+	go install github.com/jesseduffield/lazygit@latest
+else
+	echo "lazygit already installed"
+fi
 
 # Tmux
-cp -r ~/.config/.dotfiles/tmux ~/.config/tmux/
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+echo "\n############################################"
+echo "INSTALL TMUX                                "
+echo "############################################\n"
+if ! command -v lazygit &>/dev/null; then
+	cp -r ~/.config/.dotfiles/tmux ~/.config/tmux/
+	git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+else
+	echo "tmux already installed"
+fi
 
 # Starship prompt
-sudo curl -sS https://starship.rs/install.sh | sh
-cp -r ~/.config/.dotfiles/starship/ ~/.config/starship
+echo "\n############################################"
+echo "INSTALL STARSHIP                            "
+echo "############################################\n"
+if ! command -v starship &>/dev/null; then
+	sudo curl -sS https://starship.rs/install.sh | sh
+	cp -r ~/.config/.dotfiles/starship/ ~/.config/starship
+else
+	echo "starship already installed"
+fi
 
 # Oh my zsh and plugins
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+echo "\n############################################"
+echo "INSTALL OHMYZSH                             "
+echo "############################################\n"
+DIRECTORY=~/.oh-my-zsh/
+if [ ! -d "$DIRECTORY" ]; then
+	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
-git clone https://github.com/zsh-users/zsh-autosuggestions \
-	${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+	# Get plugins
+	git clone https://github.com/zsh-users/zsh-autosuggestions \
+		${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+	git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+else
+	echo "oh-my-zsh already installed"
+fi
 
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+echo "\n############################################"
+echo "INSTALL REPOS                               "
+echo "############################################\n"
+DIRECTORY=~/repos/
+if [ ! -d "$DIRECTORY" ]; then
+	mkdir ~/repos
+fi
 
-# Install repos
-# - Neovim
-mkdir ~/repos
-git clone https://github.com/neovim/neovim ~/repos/neovim
-cd ~/repos/neovim && make CMAKE_BUILD_TYPE=RelWithDebInfo
-sudo make install
-cd ~
+echo "--- INSTALL NEOVIM                         "
+DIRECTORY=~/repos/neovim/
+if [ ! -d "$DIRECTORY" ]; then
+	git clone https://github.com/neovim/neovim ~/repos/neovim
+	cd ~/repos/neovim && make CMAKE_BUILD_TYPE=RelWithDebInfo
+	sudo make install
+else
+	echo "neovim already installed"
+fi
+
+cd $start_dir
