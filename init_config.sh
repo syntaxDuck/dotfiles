@@ -14,8 +14,9 @@ sudo apt-get -y install git \
 	ripgrep \
 	fd-find \
 	fzf \
-	stow \
-	nodejs npm
+	btop \
+	neofetch \
+	stow
 
 start_dir=$PWD
 
@@ -124,6 +125,11 @@ if [ ! -d "$DIRECTORY" ]; then
 else
 	echo "oh-my-zsh already installed"
 fi
+
+# Get plugins
+git clone https://github.com/zsh-users/zsh-autosuggestions \
+	${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 
 echo "\n############################################"
 echo "INSTALL REPOS                               "

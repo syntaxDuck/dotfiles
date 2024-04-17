@@ -80,6 +80,11 @@ plugins=(
 source $ZSH/oh-my-zsh.sh
 source ~/.zsh_profile
 
+eval "$(starship init zsh)"
+export STARSHIP_CONFIG=~/.config/starship/starship.toml
+
+eval "$(zoxide init zsh)"
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -105,8 +110,3 @@ source ~/.zsh_profile
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-
-eval "$(starship init zsh)"
-export STARSHIP_CONFIG=~/.config/starship/starship.toml
-
-eval "$(zoxide init zsh)"
