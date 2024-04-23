@@ -58,6 +58,8 @@ if ! command -v go &>/dev/null; then
 			echo "File exists. Installing..."
 			sudo tar -C /usr/local -xvf $(basename $go_version)
 			echo "Installation complete."
+			rm ~/$go_version
+			source ~/.zshrc
 		else
 			echo "ERROR: Downloaded file not found."
 		fi
@@ -139,12 +141,13 @@ if [ ! -d "$DIRECTORY" ]; then
 	mkdir ~/repos
 fi
 
-echo "--- INSTALL NEOVIM                         "
+echo "--- INSTALL NEOVIM"
 DIRECTORY=~/repos/neovim/
 if [ ! -d "$DIRECTORY" ]; then
 	git clone https://github.com/neovim/neovim ~/repos/neovim
 	cd ~/repos/neovim && make CMAKE_BUILD_TYPE=RelWithDebInfo
 	sudo make install
+	sudo npm install -g neovim
 else
 	echo "neovim already installed"
 fi

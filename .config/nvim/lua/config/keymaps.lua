@@ -3,12 +3,12 @@
 -- Add any additional keymaps here
 
 -- Remove lazyvim binds
-vim.keymap.del("n", "<C-l>")
-vim.keymap.del("n", "<C-h>")
-vim.keymap.del("n", "<C-j>")
-vim.keymap.del("n", "<C-k>")
-
--- Replace with tmux binds, these seem to wrok with nvim windows too so that cool
+-- vim.keymap.del("n", "<C-l>")
+-- vim.keymap.del("n", "<C-h>")
+-- vim.keymap.del("n", "<C-j")
+-- vim.keymap.del("n", "<C-k>")
+--
+-- -- Replace with tmux binds, these seem to wrok with nvim windows too so that cool
 vim.keymap.set("n", "<C-H>", "<cmd> TmuxNavigateLeft<CR>", { desc = "Window Left" })
 vim.keymap.set("n", "<C-L>", "<cmd> TmuxNavigateRight<CR>", { desc = "Window Right" })
 vim.keymap.set("n", "<C-J>", "<cmd> TmuxNavigateDown<CR>", { desc = "Window Down" })
