@@ -1,3 +1,4 @@
-init_config.sh
-init_config_mac.sh
-\.git
+.git
+README.md
+debug
+scripts
