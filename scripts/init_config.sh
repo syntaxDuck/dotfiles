@@ -15,7 +15,6 @@ install_packages_ubuntu() {
     build-essential \
     tmux \
     podman \
-    docker \
     ripgrep \
     fd-find \
     fzf \
@@ -23,7 +22,9 @@ install_packages_ubuntu() {
     neofetch \
     stow \
     zsh \
-    xclip
+    xclip \
+    nodejs \
+    npm
 }
 
 install_packages_macos() {
@@ -38,7 +39,6 @@ install_packages_macos() {
     curl \
     tmux \
     podman \
-    docker \
     ripgrep \
     fd \
     fzf \
@@ -57,7 +57,6 @@ install_oh_my_zsh() {
   else
     echo "oh-my-zsh already installed"
   fi
-
 }
 
 install_oh_my_zsh_plugins() {
@@ -65,7 +64,6 @@ install_oh_my_zsh_plugins() {
     ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
   git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
     ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-
 }
 
 install_rust() {
@@ -78,7 +76,7 @@ install_rust() {
 }
 
 install_golang() {
-  local go_version="https://go.dev/dl/go1.22.2.linux-amd64.tar.gz"
+  local go_version="https://go.dev/dl/go1.23.5.linux-amd64.tar.gz"
   local go_expected_hash="5901c52b7a78002aeff14a21f93e0f064f74ce1360fce51c6ee68cd471216a17"
 
   if ! command -v go &>/dev/null; then
@@ -88,8 +86,10 @@ install_golang() {
     downloaded_hash=$(sha256sum $(basename $go_version) | awk '{print $1}')
     if [[ "$downloaded_hash" == "$go_expected_hash" ]]; then
       sudo tar -C /usr/local -xvf $(basename $go_version)
-      rm (basename $go_version)
-      source $HOME/.zshrc
+      rm $(basename $go_version)
+      export GOROOT=/usr/local/go
+      export GOPATH=$HOME/go
+      export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
     else
       echo "ERROR: Checksum didn't match for Go installation!!"
     fi
@@ -99,7 +99,7 @@ install_golang() {
 }
 
 install_zoxide() {
-  if ! command -v cargo &>/dev/null; then
+  if command -v cargo &>/dev/null; then
     if ! command -v zoxide &>/dev/null; then
       cargo install zoxide --locked
     else
@@ -111,9 +111,10 @@ install_zoxide() {
 }
 
 install_lazygit() {
-  if ! command -v go &>/dev/null; then
+  if command -v go &>/dev/null; then
     if ! command -v lazygit &>/dev/null; then
       go install github.com/jesseduffield/lazygit@latest
+      export PATH=$PATH:~/go/bin
     else
       echo "lazygit already installed"
     fi
@@ -124,13 +125,13 @@ install_lazygit() {
 
 install_tmux_plugins() {
   if command -v tmux &>/dev/null; then
-    if [! -d "$HOME/.tmux/plugins/tpm"]; then
+    if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then  # Fixed typo here
       git clone https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
     else
       echo "tmux plugins already installed"
     fi
   else
-    echo "tmux plugins already installed"
+    echo "tmux is not installed"
   fi
 }
 
@@ -149,7 +150,6 @@ install_repos() {
   fi
 
   install_repo_neovim
-
 }
 
 install_repo_neovim() {
@@ -186,7 +186,7 @@ read_choice() {
   local choice
   read -p "Enter your choice [0-9, A]: " choice
   case $choice in
-    1) install_packages ;;
+    1)  ;;
     2) install_oh_my_zsh ;;
     3) install_rust ;;
     4) install_golang ;;
@@ -213,22 +213,23 @@ read_choice() {
 
 main() {
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    install_packages=install_packages_ubuntu
+    install_packages_ubuntu
   elif [[ "$OSTYPE" == "darwin"* ]]; then
-    install_packages=install_packages_macos
+    install_packages_macos
   else
     echo "Unsupported OS type: $OSTYPE"
     exit 1
   fi
 
-  cd $HOME/.dotfiles
-  stow . -t $HOME
+  #cd $HOME/.dotfiles
+  #stow . -t $HOME
 
-  while true; od
+  while true; do  # Fixed typo here
     show_menu
     read_choice
-  doen
+  done  # Fixed typo here
 }
 
 main
 cd $PWD
+
